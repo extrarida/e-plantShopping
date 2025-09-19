@@ -39,6 +39,29 @@ body {
    
 }
 
+.cart {
+    position: relative; /* This creates a positioning context for the cart count */
+    display: inline-block; /* Ensures proper positioning */
+}
+
+.cart-count {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers the number perfectly inside the cart */
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    pointer-events: none; /* Prevents the count from interfering with cart clicks */
+}
+  
+
 /* Product Grid */
 .product-grid {
     display:flex;
