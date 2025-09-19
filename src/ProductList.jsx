@@ -6,11 +6,16 @@ import { useSelector, useDispatch } from 'react-redux';
 
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
-    const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const [addedToCart, setAddedToCart] = useState({});
-    const dispatch = useDispatch(); // used to dispatch actions
-    const cartItems = useSelector(state => state.cart.items); // get cart items 
+    const [showPlants, setShowPlants] = useState(false);
+    const dispatch = useDispatch();
+    const cartItems = useSelector(state => state.cart.items);
     const totalCartQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+    // Create addedToCart state based on items in cart
+    const addedToCart = cartItems.reduce((acc, item) => {
+        acc[item.name] = true;
+        return acc;
+    }, {});
 
     const calculateTotalQuantity = () => {
         return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
@@ -223,6 +228,7 @@ function ProductList({ onHomeClick }) {
             ]
         }
     ];
+
     const styleObj = {
         backgroundColor: '#4CAF50',
         color: '#fff!important',
@@ -246,10 +252,7 @@ function ProductList({ onHomeClick }) {
 
     const handleAddToCart = (product) => {
         dispatch(addItem(product));
-        setAddedToCart((prevState) => ({
-            ...prevState, [product.name]: true,
-        }
-    ));}
+    };
 
     const handleHomeClick = (e) => {
         e.preventDefault();
@@ -258,18 +261,20 @@ function ProductList({ onHomeClick }) {
 
     const handleCartClick = (e) => {
         e.preventDefault();
-        setShowCart(true); // Set showCart to true when cart icon is clicked
+        setShowCart(true);
     };
+
     const handlePlantsClick = (e) => {
         e.preventDefault();
-        setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
-        setShowCart(false); // Hide the cart when navigating to About Us
+        setShowPlants(true);
+        setShowCart(false);
     };
 
     const handleContinueShopping = (e) => {
         e.preventDefault();
         setShowCart(false);
     };
+
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -283,7 +288,6 @@ function ProductList({ onHomeClick }) {
                             </div>
                         </a>
                     </div>
-
                 </div>
                 <div style={styleObjUl}>
                     <div> <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a></div>
@@ -297,9 +301,10 @@ function ProductList({ onHomeClick }) {
                     {plantsArray.map((category, index) => (
                         <div key={index}>
                             <h1>
-                                <div style="
-    text-align: center;
-    margin-top: 30px;">{category.category}</div>
+                                <div style={{
+                                    textAlign: 'center',
+                                    marginTop: '30px'
+                                }}>{category.category}</div>
                             </h1>
                             <div className='product-list'>
                                 {category.plants.map((plant, plantIndex) => (
@@ -317,11 +322,9 @@ function ProductList({ onHomeClick }) {
                                         onClick={() => handleAddToCart(plant)}
                                         disabled={addedToCart[plant.name]}
                                         style={{
-                                            backgroundColor: addedToCart[plant.name] ? '#ccc' : '#4CAF50', // gray if added
+                                            backgroundColor: addedToCart[plant.name] ? '#ccc' : '#4CAF50',
                                             cursor: addedToCart[plant.name] ? 'not-allowed' : 'pointer'
                                           }}
-                                        //added in a function so that it only runs when you click on the
-                                        //button, and not when the page is loaded
                                         >
                                             {addedToCart[plant.name] ? "Added to Cart" : "Add to Cart"}
                                         </button>
@@ -336,9 +339,6 @@ function ProductList({ onHomeClick }) {
             ) : (
                 <CartItem 
                 onContinueShopping={handleContinueShopping} 
-                onItemRemoved={(name) => {
-                    setAddedToCart(prev => ({ ...prev, [name]: false }));
-                }} 
                 />
             )}
         </div>
